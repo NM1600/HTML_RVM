@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="adminLogin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+        
+    <title>Welcome Admin!</title>
+</head>
+<body>
+    <form id="adminLoginForm">
+        <img src="logoEarn.png" class="logo" alt="logo">
+        <p>Username:</p>
+        <div class="username_txtbox">
+            <input type="text" placeholder="Enter username" name="admin_username">
+        </div>
+        <p>Password:</p>
+        <div class="password_txtbox">
+            <input type="password" placeholder="Enter password" name="admin_password">
+        </div>
+        <input type="submit" value="Login" class="loginBtn" name="login_Btn" onclick="window.location.href='adminDashboard.html'">
+        <input type="button" value="Go Back" class="loginBtn" onclick="window.location.href='index.html'">
+    </form>
+    
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            
+            // Get form data
+            const formData = new FormData(this);
+            const username = formData.get('admin_username');
+            const password = formData.get('admin_password');
+            
+            // Perform login action
+            fetch('https://recycleapi.igotsolutionsph.com/api/loginAdmin/admin/admin', {
+                method: 'POST', // Change method to POST
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Redirect to adminDashboard.html on successful login
+                    window.location.href = 'adminDashboard.html';
+                } else {
+                    throw new Error('Login failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error logging in admin:', error);
+            });
+        });
+    </script>
+</body>
+</html>

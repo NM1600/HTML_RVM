@@ -1,0 +1,85 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="claimReward.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+           
+        <title>Claim Reward</title>
+    </head>
+    <body>
+        <form method="post" action="">
+            <div class="container">
+                <h1>REDEEM REWARD</h1>
+                    <img src="" id="qrImage">
+                        <label for="idNumber">ID number:</label>
+                        <input type="text" id="idNumber" placeholder="ID number" readonly>
+                        <label for="bottleCount">Number of collected bottles:</label>
+                        <input type="text" id="bottleCount" placeholder="Number of collected bottles" readonly>
+                        <label for="canCount">Number of collected cans:</label>
+                        <input type="text" id="canCount" placeholder="Number of collected cans" readonly>
+                        <label for="rewardPoints">Reward points earned:</label>
+                        <input type="text" id="rewardPoints" placeholder="Reward points earned" readonly>
+                        <input onclick="claimReward()" type="button" value="Claim Reward (QR)" class="GenerateQRBtn" name="GenerateQR_Btn">
+                    
+                        <div id="imgBox">
+                        <script>
+        
+                            let imgBox = document.getElementById("imgBox");
+                            let qrImage = document.getElementById("qrImage");
+                            let idnum = document.getElementById("idnum");
+                            let bottles = document.getElementById("bottles");
+                            let cans = document.getElementById("cans");
+                            let pts = document.getElementById("pts");
+
+                            function generateUniqueIdentifier() {
+                                // Generate a random string of 8 characters
+                                let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                                let randomString = '';
+                                for (let i = 0; i < 8; i++) {
+                                    randomString += characters.charAt(Math.floor(Math.random() * characters.length));
+                                }
+                                return randomString;
+                            }
+
+                            function claimReward() {
+                                let rewardPts = parseFloat(pts.value);
+                                if (rewardPts < 5) {
+                                    alert("You cannot claim rewards yet as your collected plastic bottles and cans are too little. Collect more bottles and cans to claim reward!");
+                                } else {
+                                    let uniqueIdentifier = generateUniqueIdentifier(); // Generate unique identifier
+                                    updateDatabase(uniqueIdentifier); // Update the database with the unique identifier
+                                }
+                            }
+
+                            function generateQR(dateTime, uniqueIdentifier) {
+                                let data = "ID Number: " + idnum.value + ", " +
+                                            "Bottles collected: " + bottles.value + ", " +
+                                            "Cans collected: " + cans.value + ", " +
+                                            "Reward pts (php): " + pts.value + ", " +
+                                            "Unique Identifier: " + uniqueIdentifier + ", " + // Include unique identifier
+                                            "Claimed Date: " + dateTime + ", " + " Reminders: Present your QR code to Recycle and Earn admin to claim reward."; // Include date and time in QR code data
+
+                                qrImage.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(data);
+                            }
+
+                            function updateDatabase(uniqueIdentifier) {
+                                let xhr = new XMLHttpRequest();
+                                xhr.open("POST", "updateDatabase.php", true);
+                                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                                xhr.onreadystatechange = function () {
+                                    if (xhr.readyState == 4 && xhr.status == 200) {
+                                        let dateTime = new Date().toLocaleString(); // Get current date and time
+                                        generateQR(dateTime, uniqueIdentifier); // Generate QR code with current date and time and unique identifier
+                                        console.log(xhr.responseText); // Output response from updateDatabase.php
+                                    }
+                                };
+                                xhr.send("idnumber=" + idnum.value + "&uniqueIdentifier=" + uniqueIdentifier); // Send ID number and unique identifier as POST data
+                            }
+                        </script>
+                </div>
+                <input type="submit" value="Go Back" class="GoBackBtn" name="GoBack_Btn" formaction="studentDashboard.html" target="_blank">
+            </div>
+        </form>
+    </body>
+</html>
